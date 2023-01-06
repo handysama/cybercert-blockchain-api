@@ -1,0 +1,25 @@
+api_host: http://127.0.0.1:10788
+org_hlf_config: /app/org1.yaml # change to your local path
+chaincode:
+  certificate_info:
+    channel_id: ecertplatform
+  certificate_template:
+    channel_id: ecertplatform
+  token_registry:
+    channel_id: ecertplatform
+organizations:
+  org1:
+    org_name: Org1MSP
+    org_admin: admin
+  org2:
+    org_name: Org2MSP
+    org_admin: admin
+rabbitmq:
+  scheme: amqp
+  host: localhost
+  port: 5672
+  username: bcworker
+  password: bcworkerpwd
+  vhost: /
+  exchange_issue_batch: blockchainworker-issue-batch
+  routing_key: blockchainworker

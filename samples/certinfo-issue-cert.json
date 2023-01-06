@@ -1,0 +1,21 @@
+{
+    "organization_name": "org1",
+    "certificate_details": {
+        "certificate_id": "cert-001",
+        "certificate_signature": "d7846456-ca7a-4595-9610-28aa14855f22",
+        "template_ref": "course-001",
+        "course_name": "Financial Practioners Fintech Training Programme",
+        "module_name": "How is DeFi Transforming Finance?",
+        "certificate_holder": "Aster Cheng",
+        "email": "aster@academy.hk",
+        "issuer_name": "My Academy",
+        "issued_at": "25 May 2022",
+        "extras": {
+            "attributes": [
+                {
+                    "attributeCode1": "Custom attribute value"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,4 @@
+{
+    "organization_name": "org1",
+    "query_string": "{\"selector\":{\"course_name\":\"Financial Practioners Fintech Training Programme 2022\"},\"use_index\":[\"_design/indexCourseNameDoc\",\"indexCourseName\"]}"
+}

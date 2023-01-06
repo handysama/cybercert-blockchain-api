@@ -1,0 +1,731 @@
+swagger: "2.0"
+info:
+  title: eCertification Blockchain API
+  description: eCert Blockchain API endpoint for query and invoke chaincode in Hyperledger Fabric.
+  version: 1.0.0
+basePath: /api
+schemes:
+  - http
+tags:
+  - name: certificate_info
+    description: API wrapper for certificate info chaincode
+  - name: certificate_template
+    description: API wrapper for certificate template chaincode
+  - name: healthcheck
+    description: Healthcheck for readiness and liveness
+  - name: token_registry
+    description: API wrapper for token registry chaincode
+paths:
+  /healthcheck/ready:
+    get:
+      tags: [healthcheck]
+      summary: Returns status of service availability
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              version:
+                type: string
+              message:
+                type: string
+        503:
+          description: Service Unavailable
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /certificate/info/issue:
+    post:
+      tags: [certificate_info]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: certificate_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            certificate_details:
+              $ref: "#/definitions/CertificateInfo"
+      responses:
+        201:
+          description: OK
+          schema:
+            $ref: "#/definitions/CreatedResponse"
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /certificate/info/issue-batch:
+    post:
+      tags: [certificate_info]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: certificate_batch
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            template:
+              $ref: "#/definitions/CertificateTemplate"
+            certificate_details:
+              description: certificate details csv content
+              type: array
+              items:
+                $ref: "#/definitions/CertificateInfo"
+            callback_url:
+              description: callback endpoint to notify platform for each issued certificate
+              type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /certificate/info/query-records:
+    post:
+      summary: query certificates by query string (index)
+      tags: [certificate_info]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: query_records
+        schema:
+          type: object
+          properties:
+            organization_name:
+              type: string
+            query_string:
+              type: string
+          required:
+          - query_string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /certificate/info/query-certificate:
+    post:
+      summary: query one specific certificate by certificate id
+      tags: [certificate_info]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: query_certificate
+        schema:
+          type: object
+          properties:
+            organization_name:
+              type: string
+            certificate_id:
+              type: string
+          required:
+          - certificate_id
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /certificate/info/revoke:
+    delete:
+      tags: [certificate_info]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: revoke_certificate
+        schema:
+          type: object
+          properties:
+            organization_name:
+              type: string
+            certificate_id:
+              type: string
+          required:
+          - certificate_id
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /certificate/info/history:
+    post:
+      tags: [certificate_info]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: get_history
+        schema:
+          type: object
+          properties:
+            organization_name:
+              type: string
+            certificate_id:
+              type: string
+          required:
+          - certificate_id
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /certificate/template/:
+    post:
+      summary: upsert certificate template on blockhain
+      tags: [certificate_template]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: certificate_template
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            template:
+              $ref: "#/definitions/CertificateTemplate"
+      responses:
+        201:
+          description: OK
+          schema:
+            $ref: "#/definitions/CreatedResponse"
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /certificate/template/query:
+    post:
+      summary: query certificate template by key
+      tags: [certificate_template]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: query_template
+        schema:
+          type: object
+          properties:
+            organization_name:
+              type: string
+            template_key:
+              type: string
+          required:
+          - template_key
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /certificate/template/history:
+    post:
+      summary: query certificate template modification history
+      tags: [certificate_template]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: get_history
+        schema:
+          type: object
+          properties:
+            organization_name:
+              type: string
+            template_key:
+              type: string
+          required:
+          - template_key
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/issue/root:
+    post:
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            args:
+              $ref: "#/definitions/IssueRootTokenPayload"
+      responses:
+        201:
+          description: OK
+          schema:
+            $ref: "#/definitions/CreatedResponse"
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/issue/transferable:
+    post:
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            args:
+              $ref: "#/definitions/IssueTransferableTokenPayload"
+      responses:
+        201:
+          description: OK
+          schema:
+            $ref: "#/definitions/CreatedResponse"
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/issue/standard:
+    post:
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            args:
+              $ref: "#/definitions/IssueStandardTokenPayload"
+      responses:
+        201:
+          description: OK
+          schema:
+            $ref: "#/definitions/CreatedResponse"
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/change-token-owner:
+    post:
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            token_id:
+              type: string
+            owner:
+              type: string
+          required:
+          - token_id
+          - owner
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/CreatedResponse"
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/consume:
+    post:
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            token_id:
+              type: string
+          required:
+          - token_id
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/CreatedResponse"
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/revoke:
+    delete:
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            token_id:
+              type: string
+          required:
+          - organization_name
+          - token_id
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/query:
+    post:
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: query_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            token_id:
+              type: string
+          required:
+          - token_id
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/query-records:
+    post:
+      summary: query tokens by query string (index)
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: query_records
+        schema:
+          type: object
+          properties:
+            organization_name:
+              type: string
+            query_string:
+              type: string
+          required:
+          - query_string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/history:
+    post:
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            token_id:
+              type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /access-token/status:
+    post:
+      tags: [token_registry]
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token_record
+        schema:
+          type: object
+          properties:
+            organization_name:
+              description: registered organization name on blockchain
+              type: string
+            token_id:
+              type: string
+          required:
+          - token_id
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              token_id:
+                type: string
+              status:
+                type: string
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/ApiResponse"
+definitions:
+  ApiResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+  CertificateInfo:
+    type: object
+    properties:
+      certificate_id:
+        type: string
+      certificate_signature:
+        type: string
+      template_ref:
+        type: string
+      course_name:
+        type: string
+      module_name:
+        type: string
+      certificate_holder:
+        type: string
+      email:
+        type: string
+      issuer_name:
+        type: string
+      issued_at:
+        type: string
+      extras:
+        type: object
+  CertificateTemplate:
+    type: object
+    properties:
+      template_key:
+        type: string
+      template_source:
+        type: string
+      source_type:
+        type: string
+      version:
+        type: string
+      issuer_id:
+        type: string
+      issuer_name:
+        type: string
+  CreatedResponse:
+    type: object
+    properties:
+      transaction_id:
+        type: string
+  IssueRootTokenPayload:
+    type: object
+    properties:
+      token_id:
+        type: string
+      certificate_id:
+        type: string
+      owner:
+        type: string
+  IssueTransferableTokenPayload:
+    type: object
+    properties:
+      token_id:
+        type: string
+      issuer_token_id:
+        type: string
+      recipient:
+        type: string
+      amount:
+        type: integer
+      monthly_token_quota:
+        type: integer
+      expiry_date:
+        description: unix timestamp in second (UTC)
+        type: integer
+  IssueStandardTokenPayload:
+    type: object
+    properties:
+      token_id:
+        type: string
+      issuer_token_id:
+        type: string
+      recipient:
+        type: string
+      amount:
+        type: integer
+      access_quota:
+        type: integer
+      expiry_date:
+        description: unix timestamp in second (UTC)
+        type: integer
