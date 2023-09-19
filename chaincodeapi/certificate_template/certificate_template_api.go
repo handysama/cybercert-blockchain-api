@@ -33,8 +33,8 @@ type HistoryQueryResult struct {
 }
 
 type QueryTemplateResult struct {
-	TransactionID string
-	Payload       CertificateTemplate
+	TransactionID string              `json:"transaction_id"`
+	Payload       CertificateTemplate `json:"payload"`
 }
 
 type QueryResult struct {
@@ -43,7 +43,7 @@ type QueryResult struct {
 }
 
 const (
-	CHAINCODE_ID  = "certificate_template"
+	CHAINCODE_ID  = "certificate-template"
 	CHANNELID_KEY = "chaincode.certificate_template.channel_id"
 )
 

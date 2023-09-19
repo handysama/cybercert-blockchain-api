@@ -54,7 +54,7 @@ type QueryResult struct {
 }
 
 const (
-	CHAINCODE_ID  = "certificate_info"
+	CHAINCODE_ID  = "certificate-info"
 	CHANNELID_KEY = "chaincode.certificate_info.channel_id"
 )
 
